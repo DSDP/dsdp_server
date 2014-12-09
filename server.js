@@ -9,6 +9,7 @@ var app        = express(); 				// define our app using express
 var bodyParser = require('body-parser');
 var mail       = require('./app/model/mail');
 var upload     = require('./app/model/upload');
+var exist      = require('./app/model/exist');
 var busboy     = require('connect-busboy');
 
 // configure app to use bodyParser()
@@ -68,6 +69,18 @@ router.route('/upload')
     .post(function(req, res) {
     	upload.uploadFile(req, res, __dirname);
     });
+
+// ----------------------------------------------------
+// on routes that end in /proxy/*
+// ----------------------------------------------------
+app.get("/proxy/search", function(req, res){ 
+	exist.search(req, res);
+});
+
+app.get("/proxy/searchIndex", function(req, res){ 
+	exist.searchIndex(req, res);
+});
+
 
 // all of our routes will be prefixed with /api
 app.use('/api', router);

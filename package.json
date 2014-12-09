@@ -6,7 +6,8 @@
 		"nodemailer": "^1.0.0",
 		"body-parser": "^1.0.1",
 		"connect-busboy": "^0.0.2",
-		"node-fs": "^0.1.7"
+		"node-fs": "^0.1.7",
+		"http-proxy" : "^1.7.3"
 	}
 }
 
