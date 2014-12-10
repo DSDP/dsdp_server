@@ -4,13 +4,14 @@
 // =============================================================================
 
 // call the packages we need
-var express    = require('express'); 		// call express
-var app        = express(); 				// define our app using express
-var bodyParser = require('body-parser');
-var mail       = require('./app/model/mail');
-var upload     = require('./app/model/upload');
-var exist      = require('./app/model/exist');
-var busboy     = require('connect-busboy');
+var express     = require('express'); 		// call express
+var app         = express(); 				// define our app using express
+var bodyParser  = require('body-parser');
+var mail        = require('./app/model/mail');
+var upload      = require('./app/model/upload');
+var existConfig = require('./app/model/exist');
+var busboy      = require('connect-busboy');
+var proxy       = require('express-http-proxy');
 
 // configure app to use bodyParser()
 // this will let us get the data from a POST
@@ -29,14 +30,7 @@ var router = express.Router(); 				// get an instance of the express Router
 
 // middleware to use for all requests
 router.use(function(req, res, next) {
-	// do logging
-	console.log('Something is happening.');
 	next(); // make sure we go to the next routes and don't stop here
-});
-
-// test route to make sure everything is working (accessed at GET http://localhost:8080/api)
-router.get('/', function(req, res) {
-	res.json({ message: 'hooray! welcome to our api!' });	
 });
 
 // more routes for our API will happen here
@@ -73,14 +67,41 @@ router.route('/upload')
 // ----------------------------------------------------
 // on routes that end in /proxy/*
 // ----------------------------------------------------
-app.get("/proxy/search", function(req, res){ 
-	exist.search(req, res);
-});
+app.use('/proxy/search', proxy(existConfig.urlExist, {
+    forwardPath: function(req, res) { 
+        return existConfig.pathExist + existConfig.search + req._parsedUrl.search
+    }
+}));
 
-app.get("/proxy/searchIndex", function(req, res){ 
-	exist.searchIndex(req, res);
-});
+app.use('/proxy/searchIndex', proxy(existConfig.urlExist, {
+    forwardPath: function(req, res) { 
+        return existConfig.pathExist + existConfig.searchIndex + req._parsedUrl.search
+    }
+}));
 
+app.use('/proxy/display', proxy(existConfig.urlExist, {
+    forwardPath: function(req, res) { 
+        return existConfig.pathExist + existConfig.display + req._parsedUrl.search
+    }
+}));
+
+app.use('/css/*', proxy(existConfig.urlExist, {
+	forwardPath: function(req, res) {
+		return existConfig.pathExist + req._parsedUrl.path
+	}
+}));
+
+app.use('/js/*', proxy(existConfig.urlExist, {
+	forwardPath: function(req, res) {
+		return existConfig.pathExist + req._parsedUrl.path
+	}
+}));
+
+app.use('/fonts/*', proxy(existConfig.urlExist, {
+	forwardPath: function(req, res) {
+		return existConfig.pathExist + req._parsedUrl.path
+	}
+}));
 
 // all of our routes will be prefixed with /api
 app.use('/api', router);
@@ -88,4 +109,3 @@ app.use('/api', router);
 // START THE SERVER
 // =============================================================================
 app.listen(port);
-console.log('Magic happens on port ' + port);
