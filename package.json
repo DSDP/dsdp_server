@@ -1,12 +1,11 @@
 {
-	"name": "node-mail-api",
-	"main": "server.js",
-	"dependencies": {
-		"express": "^4.0.0",
-		"nodemailer": "^1.0.0",
-		"body-parser": "^1.0.1",
-		"connect-busboy": "^0.0.2",
-		"node-fs": "^0.1.7",
-		"express-http-proxy" : "^0.3.0",	}
+  "name": "node-mail-api",
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.0.0",
+    "express-http-proxy": "^0.3.0",
+    "googleapis": "^2.0.4",
+    "moment": "^2.10.3",
+    "periodic-task": "^0.1.0"
+  }
 }
-
